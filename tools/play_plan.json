@@ -1,0 +1,12 @@
+{
+ "page": "Pilotwings64Recomp.html",
+ "load": [["until", "Device Name", 60000], ["wait", 6000]],
+ "setup": [["rom", 628, 364], ["wait", 4000]],
+ "start": [["click", 628, 364], ["wait", 8000]],
+ "play": [
+  ["evalFile", "shader_survey.js"],
+  ["shot", "title.png"],
+  ["eval", "go(0, 0, 0)"], ["eval", "fly(30000)"], ["shot", "glider.png"], ["eval", "land()"],
+  ["eval", "go(2, 2, 0)"], ["eval", "fly(30000)"], ["shot", "gyrocopter.png"]
+ ]
+}
