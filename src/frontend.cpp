@@ -73,6 +73,18 @@ ultramodern::renderer::PresentationMode presentation_mode();
 std::unique_ptr<ultramodern::renderer::RendererContext> create_render_context(
         uint8_t* rdram, ultramodern::renderer::WindowHandle window_handle,
         bool developer_mode) {
+#if defined(__EMSCRIPTEN__)
+    // On the web page RT64 doesn't copy each frame back into RDRAM (render to
+    // RAM): in Chrome that readback holds every display list 5-6 ms for the GPU
+    // process. The game's CPU reads a frame only in uvCopyFrameBuf, which copies
+    // the last frame into the next one for the fade on leaving a screen and for
+    // each photo of the album. Without the copy both framebuffers' RDRAM stays as
+    // it was, so RT64 sees no change and keeps drawing over its own frame, and
+    // the album draws every photo three times over both buffers anyway. Measured
+    // on the page, the fade from the title runs the same frame for frame either
+    // way. The desktop build keeps RT64's default.
+    recompui::renderer::set_render_to_ram(false);
+#endif
     return recompui::renderer::create_render_context(
         rdram, window_handle, presentation_mode(), developer_mode);
 }
@@ -134,12 +146,16 @@ void build_launcher(recompui::LauncherMenu* menu) {
     options->add_start_game_or_load_rom_option("Load ROM", "Start Game");
     options->add_setup_controls_option("Controls");
     options->add_settings_option("Settings");
+#if !defined(__EMSCRIPTEN__)
+    // Not on a page: mods are off there (the live recompiler emits machine code), and a program that ends leaves the
+    // page dead.
     options->add_mods_option("Mods");
     // Closing the window works, but a menu the pad can reach should not need a
     // mouse to leave. add_exit_option calls ultramodern::quit(), which unwinds
     // the game thread and the renderer in order rather than tearing the process
     // down.
     options->add_exit_option("Quit");
+#endif
 }
 
 }  // namespace
@@ -314,6 +330,8 @@ void init() {
     // and nothing was saved. ultramodern's copy, which the renderer reads, is set
     // as well, so the first window opens fullscreen either way.
     //
+    // Not on a page, where the window is the page's canvas and fullscreen is the browser's to give.
+#if !defined(__EMSCRIPTEN__)
     if (first_run) {
         auto& graphics_config = recompui::config::get_graphics_config();
         graphics_config.set_option_value(
@@ -327,6 +345,9 @@ void init() {
 
         std::fprintf(stderr, "[pw64] no saved graphics settings; defaulting to fullscreen at the display\'s size\n");
     }
+#else
+    (void)first_run;
+#endif
 
     // Test hook: PW64_TEST_OPEN_SETTINGS=graphics@25 opens the settings menu on the
     // Graphics tab 25 seconds after startup, so a capture can show a tab as a

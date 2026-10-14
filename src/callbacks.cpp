@@ -21,6 +21,9 @@
 #include <vector>
 
 #include <SDL.h>
+#if defined(__EMSCRIPTEN__)
+#   include "audio_output.h"
+#endif
 #if defined(_WIN32) || defined(__APPLE__)
 #   include <SDL_syswm.h>
 #endif
@@ -503,9 +506,35 @@ uint32_t preferred_device_rate() {
 
 void close_audio_device() {
     if (g_audio_device != 0) {
+#if !defined(__EMSCRIPTEN__)
         SDL_CloseAudioDevice(g_audio_device);
+#endif
         g_audio_device = 0;
     }
+}
+
+// The output's depth and the way into it. On a page that is N64Recomp-browser's n64recomp_browser::audio, an
+// AudioWorklet on the browser's audio thread reading a ring in the program's memory: Emscripten's SDL2 plays its queue
+// from the page's thread, where WebGPU's work runs, and its sound breaks up whenever that thread is busy.
+size_t device_queued_frames() {
+#if defined(__EMSCRIPTEN__)
+    return n64recomp_browser::audio::queued_frames();
+#else
+    return SDL_GetQueuedAudioSize(g_audio_device) / kBytesPerFrame;
+#endif
+}
+
+void device_queue(const std::vector<int16_t>& samples) {
+#if defined(__EMSCRIPTEN__)
+    static std::vector<float> frames;
+    frames.resize(samples.size());
+    for (size_t i = 0; i < samples.size(); ++i) {
+        frames[i] = samples[i] * (1.0f / 32768.0f);
+    }
+    n64recomp_browser::audio::queue(frames.data(), frames.size() / kAudioChannels);
+#else
+    SDL_QueueAudio(g_audio_device, samples.data(), static_cast<Uint32>(samples.size() * sizeof(int16_t)));
+#endif
 }
 
 // Opens (or reopens) the output device at the game's current sample rate.
@@ -519,6 +548,20 @@ void close_audio_device() {
 // speed.
 bool open_audio_device() {
     close_audio_device();
+
+#if defined(__EMSCRIPTEN__)
+    // The page's output runs at its audio context's rate, which open() returns, and the port converts to it as it does
+    // to a device's own rate. It is opened once; g_audio_device only marks it open.
+    static const uint32_t page_rate = n64recomp_browser::audio::open(kAudioChannels);
+    g_audio_device = 1;
+    g_device_frequency = page_rate;
+    g_queue_headroom_frames = static_cast<uint32_t>(
+        uint64_t(g_audio_frequency) * queue_headroom_ms() / 1000u);
+    std::fprintf(stderr, "[pw64] audio output open at %u Hz on the page's audio thread\n", page_rate);
+    pw64::resample::configure(g_audio_frequency, g_device_frequency);
+    pw64::audiodiag::device_opened(g_device_frequency, 0u, g_device_frequency, 0u);
+    return true;
+#endif
 
     if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
         std::fprintf(stderr, "[pw64] SDL_InitSubSystem(AUDIO) failed: %s\n", SDL_GetError());
@@ -640,12 +683,10 @@ void queue_samples(int16_t* audio_data, size_t sample_count) {
     // include/pw64/audiodiag.h. Both calls are no-ops unless a PW64_AUDIO_*
     // variable is set, and what is dumped is now the finished article -- after
     // the conversion, exactly what the sound card receives.
-    pw64::audiodiag::queued(
-        static_cast<uint32_t>(SDL_GetQueuedAudioSize(g_audio_device) / kBytesPerFrame),
-        converted.data(), converted.size());
+    pw64::audiodiag::queued(static_cast<uint32_t>(device_queued_frames()),
+                            converted.data(), converted.size());
 
-    SDL_QueueAudio(g_audio_device, converted.data(),
-                   static_cast<Uint32>(converted.size() * sizeof(int16_t)));
+    device_queue(converted);
 
     // A silent port and a working one queue samples equally often, so the
     // count alone proves nothing; the amplitude is what separates the microcode
@@ -672,7 +713,7 @@ size_t get_frames_remaining() {
         // buffer that will never empty.
         return 0;
     }
-    const size_t device_frames = SDL_GetQueuedAudioSize(g_audio_device) / kBytesPerFrame;
+    const size_t device_frames = device_queued_frames();
     // The real depth, in device frames, goes to the diagnostics: that is the unit
     // the queue is in and the unit the device consumes in. No-op unless
     // PW64_AUDIO_STATS is set.
@@ -1044,7 +1085,11 @@ ultramodern::renderer::WindowHandle create_window(ultramodern::gfx_callbacks_t::
     int width = 320 * 4;
     int height = 240 * 4;
     Uint32 flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
-#if defined(__APPLE__)
+#if defined(__EMSCRIPTEN__)
+    // On a page the window is the canvas, sized by the page in CSS pixels, which SDL follows; at the device's pixels
+    // a laptop's 2x scale would draw four times the pixels.
+    flags &= ~SDL_WINDOW_ALLOW_HIGHDPI;
+#elif defined(__APPLE__)
     // RT64 draws through Metal here, and SDL has to know that when it makes the
     // window: this flag is what gives it a layer-backed view to hang a
     // CAMetalLayer off. Asking for the layer later, on a window made without

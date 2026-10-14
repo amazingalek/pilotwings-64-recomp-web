@@ -69,7 +69,36 @@ endif()
 # this project needs it in its own scope because src/callbacks.cpp includes
 # SDL.h and creates the window. RT64 and RecompFrontend each run their own
 # find_package in their own directories.
-if(NOT WIN32)
+# With Emscripten (emcmake cmake), the game builds as a page for a browser, Pilotwings64Recomp.html, through
+# lib/N64Recomp-browser/frontend: RT64 and the menus on WebGPU, mods off (docs/BUILDING.md, "The web page"). It is
+# always the whole game: the runtime, the recompiled code and the frontend.
+if(EMSCRIPTEN)
+    set(PW64_WITH_RUNTIME ON CACHE BOOL "" FORCE)
+    set(PW64_WITH_RECOMPILED ON CACHE BOOL "" FORCE)
+    set(PW64_WITH_FRONTEND ON CACHE BOOL "" FORCE)
+    # lib/RT64, lib/N64ModernRuntime and lib/RecompFrontend with N64Recomp-browser's web support patched in, on top of
+    # this port's own patches (tools/patch_all.py), if docs/BUILDING.md's step hasn't already. Each project by name:
+    # patches.txt calls rt64's folder rt64, and here it is RT64.
+    include(${CMAKE_CURRENT_SOURCE_DIR}/lib/N64Recomp-browser/patches/apply.cmake)
+    foreach(project IN ITEMS "rt64;RT64" "plume;RT64/src/contrib/plume" "hlslpp;RT64/src/contrib/hlslpp"
+            "N64ModernRuntime;N64ModernRuntime" "N64Recomp;N64ModernRuntime/N64Recomp"
+            "RecompFrontend;RecompFrontend")
+        list(GET project 0 name)
+        list(GET project 1 path)
+        n64recomp_browser_apply_patch(${name} "${PW64_LIB_DIR}/${path}")
+    endforeach()
+    # Threads are pthreads (SharedArrayBuffer), and the runtime ends a game thread by throwing. -msimd128 is wasm SIMD,
+    # which every browser with WebGPU has; -mtail-call makes the recompiled code's tail calls return_calls. With
+    # -msimd128 xxHash would take its NEON path through Emscripten's arm_neon.h, which doesn't compile in C++ there.
+    add_compile_options(-pthread -fwasm-exceptions -msimd128 -mtail-call "-DXXH_HAS_INCLUDE(x)=0" -sUSE_SDL=2)
+    include_directories(SYSTEM "${EMSCRIPTEN_SYSROOT}/include/SDL2")
+    add_link_options(-pthread -fwasm-exceptions -mtail-call)
+    # ccache when it is on PATH, for shorter builds; before rt64 and the runtime are added.
+    include(${CMAKE_CURRENT_SOURCE_DIR}/lib/N64Recomp-browser/frontend/build_speed.cmake)
+    # The shaders the page specializes at build time and builds before the game draws with them (src/rt64_shaders.txt
+    # says how it was recorded); before rt64 is added.
+    set(RT64_PREBUILT_SHADER_LIST ${CMAKE_CURRENT_SOURCE_DIR}/src/rt64_shaders.txt)
+elseif(NOT WIN32)
     find_package(SDL2 REQUIRED)
 endif()
 
@@ -101,7 +130,8 @@ if(PW64_WITH_RUNTIME)
     # compile against the X11 definition, and a target that compiled against
     # the wrong one would be an ABI mismatch at the call that passes the
     # handle across rather than an error.
-    if(UNIX AND NOT APPLE)
+    # Not on a page (Emscripten), where RT64 draws on the canvas through WebGPU.
+    if(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
         set(RT64_SDL_WINDOW_VULKAN ON CACHE BOOL "" FORCE)
         add_compile_definitions(PLUME_SDL_VULKAN_ENABLED RT64_SDL_WINDOW_VULKAN)
     endif()
@@ -190,6 +220,14 @@ if(PW64_WITH_FRONTEND)
         CACHE PATH "" FORCE)
     set(RECOMP_FRONTEND_RT64_PATH "${PW64_LIB_DIR}/RT64" CACHE PATH "" FORCE)
     add_subdirectory("${PW64_LIB_DIR}/RecompFrontend" EXCLUDE_FROM_ALL)
+endif()
+
+if(EMSCRIPTEN)
+    add_subdirectory("${PW64_LIB_DIR}/N64Recomp-browser/frontend" "${CMAKE_BINARY_DIR}/web_frontend")
+    # fmt 11.1 (N64Recomp's) leans on <cstdlib> arriving through other headers, which Emscripten's libc++ doesn't do.
+    if(TARGET fmt)
+        target_compile_options(fmt PRIVATE -include cstdlib)
+    endif()
 endif()
 
 # The recompiler tool lives inside N64ModernRuntime as its own submodule. Using
@@ -504,6 +542,20 @@ if(PW64_WITH_RECOMPILED)
         target_link_libraries(Pilotwings64Recomp PRIVATE pw64_recompiled)
     endif()
     target_compile_definitions(Pilotwings64Recomp PRIVATE PW64_WITH_RECOMPILED=1)
+endif()
+
+if(EMSCRIPTEN)
+    # WebAssembly checks a call's signature when it links and turns a call to an undeclared function into a trap, so
+    # the recompiled code and the patches may not call one. N64Recomp's funcs.h declares everything its code calls.
+    target_compile_options(pw64_recompiled PRIVATE -Werror=implicit-function-declaration)
+    set_property(SOURCE "${PW64_PATCH_C}" APPEND PROPERTY COMPILE_OPTIONS -Werror=implicit-function-declaration)
+    # The page (lib/N64Recomp-browser/frontend), with the frontend's assets in its .data file where the desktop build
+    # stages them beside the executable (assets/). No ROM: the player picks theirs in the launcher, and it stays in the
+    # browser.
+    n64recomp_browser_frontend_page(Pilotwings64Recomp)
+    target_link_options(Pilotwings64Recomp PRIVATE
+        "SHELL:--preload-file ${CMAKE_BINARY_DIR}/assets@/assets")
+    set_property(TARGET Pilotwings64Recomp APPEND PROPERTY LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/assets/recomp.rcss")
 endif()
 
 message(STATUS "Pilotwings64Recomp configuration:")
