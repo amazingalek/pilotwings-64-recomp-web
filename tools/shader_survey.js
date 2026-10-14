@@ -13,7 +13,9 @@
 //   TEST_UPDATE, unless told), or false after 90 s.
 // - fly(ms) holds A (throttle, or the rocket belt's thrust) and banks left and right, looking through the C views.
 // - land(ms) presses A every 1.5 s (the cannonball's shot, then on through the results) until the test has ended and
-//   the game is back in its menus, and resolves with the state.
+//   the game is back in its menus, and resolves with the state. The results menu (Check photo, Replay, Next) opens on
+//   Replay after a photo test, and its cursor wraps, so on it land() moves the cursor up to Next, the last item, first
+//   (sMenuCurSelect and sMenuItemCount, src/app/menu_utils.c, at their addresses in the US build's map).
 // - state() gives the state, island (map), vehicle, class and test.
 // RDRAM is found as the recorder's n64r finds it; halfwords sit at the address XOR 2 in its little-endian words.
 (() => {
@@ -34,6 +36,7 @@
   const r32 = (a) => HEAPU32[off(a) >>> 2];
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const block = 0x80362698;
+  const menuCount = 0x8036BDF0, menuCursor = 0x8036BE10;
   const TITLE = 0, PILOT_SELECT = 3, TEST_DETAILS = 2, TEST_UPDATE = 5, RESULTS = 6, RESULTS_CB = 13, CONGRATULATIONS = 14;
   // The port's keyboard (src/frontend.cpp): X is A, Enter is Start, the arrows the stick, L is C-right.
   const keys = {
@@ -99,7 +102,8 @@
       const s = r32(block);
       ended = ended || (s !== TEST_UPDATE);
       if (ended && ![TEST_UPDATE, RESULTS, RESULTS_CB, CONGRATULATIONS].includes(s)) return window.state();
-      await press('A');
+      const count = r32(menuCount);
+      await press(s === RESULTS && count > 1 && r32(menuCursor) !== count - 1 ? 'UP' : 'A');
       await sleep(1350);
     }
     return window.state();
