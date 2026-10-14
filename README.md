@@ -1,5 +1,20 @@
 # Pilotwings 64: Recompiled
 
+> [!WARNING]
+> **This is amazingalek/pilotwings-64-recomp-web, a fork, not Pilotwings 64: Recompiled.** Its `main` branch is
+> upstream's built into a web page (WebGPU, through [N64Recomp-browser](https://github.com/amazingalek/N64Recomp-browser)),
+> and everything on it past upstream's commits was written by AI (Claude). It is not made, endorsed or supported by
+> upstream's author, nothing here is offered upstream, and please don't take issues with this fork to them. Building
+> the page: [docs/BUILDING.md](docs/BUILDING.md#the-web-page).
+>
+> This port is here to build out and test N64Recomp-browser's web support on another game than the one it was written
+> for: what it turns up is fixed there where it can be, so every recomp's page gets the fix.
+
+**Play it in the browser: https://amazingalek.github.io/pilotwings-64-recomp-web/**, with your own dump of Pilotwings
+64 (USA), picked in the launcher and kept in the browser. It needs WebGPU (Chrome or Edge 113 and up, or Firefox). The
+page is built from this branch and published with N64Recomp-browser's `tools/publish_page.sh`, so it can be a commit or
+two behind.
+
 A native PC port of Pilotwings 64 for Windows and Linux, made by statically
 recompiling the game with [N64Recomp](https://github.com/N64Recomp/N64Recomp).
 

@@ -187,6 +187,60 @@ them, and zips the debug symbols separately. It refuses to package anything that
 looks like a dump or a save. The executable contains the game's code, recompiled;
 see the README's *Licensing* before distributing one.
 
+## The web page
+
+This fork's `main` branch also builds with [Emscripten](https://emscripten.org) into a page,
+`Pilotwings64Recomp.html`, that draws through WebGPU. `lib/RT64`, `lib/N64ModernRuntime` and `lib/RecompFrontend` are
+upstream's own, at the same commits, and [N64Recomp-browser](https://github.com/amazingalek/N64Recomp-browser)
+(`lib/N64Recomp-browser`) patches their checkouts with the web support, on top of `tools/patch_all.py`'s patches, and
+makes the game a page. The patches change nothing in the desktop build. Mods are off on the page (no live
+recompiler), and so is RT64's render to RAM, which on the page holds every display list for a readback of the frame:
+`src/frontend.cpp` says why this game doesn't need it.
+
+The page builds the shaders the game uses before it draws with them, so it never draws with RT64's slow ubershader in
+the middle of play: `src/rt64_shaders.txt` lists them in sections (its header says what each one holds), and the build
+specializes each one (`RT64_PREBUILT_SHADER_LIST` in `CMakeLists.txt`). In Chrome the whole list is built behind the
+game from its first frame, and the game waits only when a frame wants 4 or more of a section's shaders that aren't
+built yet, under a small "Preparing graphics" indicator in a corner. Firefox builds a pipeline in line with the rest of
+its GPU work, so there those above the first section (the title screen and the menus) are built before the game
+starts, and a section when the game first draws it, the game waiting. `tools/record_shaders.sh` records the list (its
+header says how): N64Recomp-browser's recorder drives the page in headless Chrome through `tools/shader_plan.json`,
+in which `tools/shader_survey.js` starts each test of each vehicle.
+
+With steps 1 and 2 done, patch the submodules with the web support too (the same commands run again when CMake
+configures, and do nothing to a checkout that has them):
+
+```sh
+for p in "rt64 lib/RT64" "plume lib/RT64/src/contrib/plume" "hlslpp lib/RT64/src/contrib/hlslpp" \
+         "N64ModernRuntime lib/N64ModernRuntime" "N64Recomp lib/N64ModernRuntime/N64Recomp" \
+         "RecompFrontend lib/RecompFrontend"; do
+    cmake -P lib/N64Recomp-browser/patches/apply.cmake $p
+done
+```
+
+Then steps 3 and 4 (on Linux: `bash tools/wsl_build_recompiler.sh` and `python3 tools/generate_game.py <dump>`), which
+build N64Recomp from the patched checkout: its `funcs.h` declares every function the recompiled code calls, which a
+WebAssembly link needs. Then, with the Emscripten SDK installed and activated and
+[naga](https://github.com/gfx-rs/wgpu/tree/trunk/naga) installed (`cargo install naga-cli`):
+
+```sh
+embuilder build sdl2-mt freetype-legacysjlj      # once
+emcmake cmake -S . -B build-web -G Ninja -DCMAKE_BUILD_TYPE=Release -DRT64_NAGA_EXECUTABLE=$(command -v naga)
+cmake --build build-web --target Pilotwings64Recomp
+```
+
+Give naga as a full path, as above: a bare name is taken as a file in the build dir. A first build compiles about
+700 files. [ccache](https://ccache.dev) on `PATH` when you configure makes later builds of a new build dir compile nothing compiled before (keep the build dir inside the checkout, as `build-web` is), and
+`-DN64RECOMP_BROWSER_FAST_LINK=ON` makes the last step, the link, take seconds instead of minutes, for a page you only
+want to try.
+
+`build-web` then holds `Pilotwings64Recomp.html`, `.js`, `.wasm`, `.data` and `coi_serviceworker.js`. The page needs
+a browser with WebGPU (Chrome or Edge 113 and up, or Firefox 141 and up) and must be cross-origin isolated: serve the
+folder with `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp`, or on a host
+that can't set headers, as is, and `coi_serviceworker.js` sets them after one reload. The player picks their dump in
+the launcher; it, the settings and the saves are kept in the browser's IndexedDB for that origin. On the page the
+keyboard is the desktop's.
+
 ## Troubleshooting
 
 | Symptom | Cause |
