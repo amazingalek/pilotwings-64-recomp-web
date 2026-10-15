@@ -207,6 +207,11 @@ starts, and a section when the game first draws it, the game waiting. `tools/rec
 header says how): N64Recomp-browser's recorder drives the page in headless Chrome through `tools/shader_plan.json`,
 in which `tools/shader_survey.js` starts each test of each vehicle.
 
+A frame the game waits on can take seconds there, which the game's scheduler took for a hung RCP: after 50 retraces
+it sent itself the RDP's done message and built the next frames into display lists RT64 hadn't read yet, and the page
+stopped on the mix of two frames' commands soon after Firefox's first wait. `patches/sched.c` takes those timeouts
+out, on the desktop too, where the runtime always finishes a frame.
+
 With steps 1 and 2 done, patch the submodules with the web support too (the same commands run again when CMake
 configures, and do nothing to a checkout that has them):
 
