@@ -246,7 +246,9 @@ the glider's 13 and 7.3-9.8 s for the gyrocopter's 35, and drew 55.6-57.2 presen
 included); headless Chrome 155 waited 4.2-4.9 s for 9 at the title and nowhere else, and drew 58.2-58.8. Sound short
 only in the waits, no WebGPU errors. The same build served locally, against one without ee2dd6a, two Chrome runs each,
 interleaved: 4.2-4.5 s at the title and no other wait, against 5.0-5.2 s there and 3.1-3.3 s for 34 of the menus'
-after Start, where the menus' sound fell 91,000-98,000 frames short.
+after Start, where the menus' sound fell 91,000-98,000 frames short. At 3840x2000 from the same page, the title left to
+play by itself (`--play 25`), an idle host: headless Chrome 155 waited 3.7 s for 9 and drew 59.6, Firefox 158 waited
+5.3 s for the boot's 33 before the first frame and drew 59.8, no sound short and no WebGPU errors in either.
 
 With steps 1 and 2 done, patch the submodules with the web support too (the same commands run again when CMake
 configures, and do nothing to a checkout that has them):
