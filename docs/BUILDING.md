@@ -222,6 +222,13 @@ the same files served with the cross-origin headers, beside another game's page:
 the title while the rest built behind the game, then 57 presents a second (median), no WebGPU errors; on an earlier
 build, alone on the GPU, 60 and no sound short.
 
+Played again from Pages, built on N64Recomp-browser 7277a2e (rt64-web 8bea892, tile copies reused from one display list
+to the next, which a page with render to RAM off needs; main 4448311) on 2026-10-15, RTX 2070, 1256x645, a fresh profile
+each, the host lightly loaded, by `tools/play_plan.json`: headless Chrome 155 waited 4.1 s for 9 at the title and drew
+58.2 presents a second (median), Firefox 158 waited 18.2 s for the title and menus' 80, 1.8 s for the glider's 13 and
+8.2 s for the gyrocopter's 35, and drew 57.8. Sound short only in Chrome's wait at the title, no WebGPU errors in either.
+Firefox's one exception is the first load, before `coi_serviceworker.js`'s reload made the page cross-origin isolated.
+
 With steps 1 and 2 done, patch the submodules with the web support too (the same commands run again when CMake
 configures, and do nothing to a checkout that has them):
 
