@@ -229,6 +229,13 @@ each, the host lightly loaded, by `tools/play_plan.json`: headless Chrome 155 wa
 8.2 s for the gyrocopter's 35, and drew 57.8. Sound short only in Chrome's wait at the title, no WebGPU errors in either.
 Firefox's one exception is the first load, before `coi_serviceworker.js`'s reload made the page cross-origin isolated.
 
+At 3840x2000, the stand-in for a laptop's integrated graphics (`play_page.mjs --size 3840x2000 --play 25`), from the
+same page on 2026-10-15, RTX 2070, a fresh profile each, the host 22% busy: headless Chrome 155 waited 5.0 s for 9 at
+the title and drew 58.2 presents a second (median; 42-59 while the rest built behind it), sound 5,306 frames short in
+its wait; Firefox 158 waited 30.7 s for the title and menus' 80 before the first frame and then drew 60, no sound
+short. No WebGPU errors in either. In one Firefox run of two the first load sat 60 s before `coi_serviceworker.js`'s
+reload.
+
 With steps 1 and 2 done, patch the submodules with the web support too (the same commands run again when CMake
 configures, and do nothing to a checkout that has them):
 
