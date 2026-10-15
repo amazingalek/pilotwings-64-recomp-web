@@ -238,6 +238,16 @@ its wait; Firefox 158 waited 30.7 s for the title and menus' 80 before the first
 short. No WebGPU errors in either. In one Firefox run of two the first load sat 60 s before `coi_serviceworker.js`'s
 reload.
 
+Played again from Pages with the menus a section of their own, built on N64Recomp-browser bcdcb78 (v0.42.0, whose
+rt64-web ee2dd6a builds the section after the boot on the boot's threads in Chrome; main 2a5ba44), on 2026-10-15, RTX
+2070, 1256x645, a fresh profile each, a busy host, by `tools/play_plan.json`, two runs each: Firefox 158 waited 6.7-7.3
+s for the logos and the title's 33 before the first frame, 18.0-18.9 s for the menus' 47 after Start, 2.2-3.1 s for
+the glider's 13 and 7.3-9.8 s for the gyrocopter's 35, and drew 55.6-57.2 presents a second (median, its waits
+included); headless Chrome 155 waited 4.2-4.9 s for 9 at the title and nowhere else, and drew 58.2-58.8. Sound short
+only in the waits, no WebGPU errors. The same build served locally, against one without ee2dd6a, two Chrome runs each,
+interleaved: 4.2-4.5 s at the title and no other wait, against 5.0-5.2 s there and 3.1-3.3 s for 34 of the menus'
+after Start, where the menus' sound fell 91,000-98,000 frames short.
+
 With steps 1 and 2 done, patch the submodules with the web support too (the same commands run again when CMake
 configures, and do nothing to a checkout that has them):
 
