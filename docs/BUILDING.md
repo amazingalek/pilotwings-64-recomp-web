@@ -250,6 +250,12 @@ after Start, where the menus' sound fell 91,000-98,000 frames short. At 3840x200
 play by itself (`--play 25`), an idle host: headless Chrome 155 waited 3.7 s for 9 and drew 59.6, Firefox 158 waited
 5.3 s for the boot's 33 before the first frame and drew 59.8, no sound short and no WebGPU errors in either.
 
+Played on N64Recomp-browser v0.46.0 (main ac1cbd8 built with its pin moved there, served locally) on 2026-10-15, RTX
+2070, a fresh profile each, one page at a time, a host 14-27% busy, by `tools/play_plan.json`: at 1256x645 headless
+Chrome 155 waited 3.4 s for 9 at the title and drew 58.2 presents a second (median), Firefox 158 waited 4.5 s for the
+boot's 33, 10.1 s for the menus' 47 after Start and 1.5-6.1 s for each test's section, and drew 58.0; at 3840x2000
+(`--play 25`) Chrome waited 3.5 s and drew 58.4, Firefox 4.5 s and 59.5. No sound short, no WebGPU errors.
+
 With steps 1 and 2 done, patch the submodules with the web support too (the same commands run again when CMake
 configures, and do nothing to a checkout that has them):
 
