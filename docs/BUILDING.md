@@ -212,6 +212,16 @@ it sent itself the RDP's done message and built the next frames into display lis
 stopped on the mix of two frames' commands soon after Firefox's first wait. `patches/sched.c` takes those timeouts
 out, on the desktop too, where the runtime always finishes a frame.
 
+Played on 2026-10-15 from Pages (main 550269d, N64Recomp-browser 33d43a9), RTX 2070, 1256x645, a fresh profile each,
+by N64Recomp-browser's `tools/play_page.mjs` with `tools/play_plan.json`: the launcher, Load ROM, the title and the
+menus, then a hang glider test and a gyrocopter test flown for 30 s each. Firefox 158, three runs: the title and
+menus' 80 pipelines took 19-29 s before the first frame, the glider's 13 2.2-2.8 s and the gyrocopter's 35 10-11 s,
+then 59-60 presents a second, sound short only in the waits (0-23 frames in all), no WebGPU errors, and no run
+stopped (the page before `patches/sched.c` stopped in two of three, soon after the first wait). Chrome 155 headless,
+the same files served with the cross-origin headers, beside another game's page: one wait of 5.9 s for 9 pipelines at
+the title while the rest built behind the game, then 57 presents a second (median), no WebGPU errors; on an earlier
+build, alone on the GPU, 60 and no sound short.
+
 With steps 1 and 2 done, patch the submodules with the web support too (the same commands run again when CMake
 configures, and do nothing to a checkout that has them):
 
