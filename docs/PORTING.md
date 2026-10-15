@@ -199,6 +199,7 @@ patches/*.c ─clang -target mips─▶ *.o ─ld.lld (patches.ld, syms.ld)─�
 | `framerate.c` | `_uvScDoneGfx` (frame hook) |
 | `gfx.c` | `uvGfxBegin` (enables the extended GBI), `uvGfxClearScreen` |
 | `clocks.c` | `uvClkGetSec` |
+| `sched.c` | `_uvScHandleRetrace` (without the scheduler's RSP and RDP timeouts) |
 | `widescreen.c` | `uvVtxRect`, `uvVtxEndPoly`, `uvChan_80204D94`, `uvChan_80204C94`, `uvChan_80204FE4` |
 | `hud.c` | the seven `hudDraw*` vehicle functions except Cannonball, `hudDrawCamera`, `hudDrawBox`, `uvFontGenDlist` |
 | `interpolation.c` | `uvGfxMtxProjPushF`, `_uvDobjsDraw`, `uvDobj_8021771C`, `uvChan_80205CE4`, `_uvEnvDraw` |

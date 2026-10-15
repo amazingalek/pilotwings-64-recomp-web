@@ -23,6 +23,7 @@
 #define osWritebackDCache osWritebackDCache_recomp
 #define osInvalDCache osInvalDCache_recomp
 #define osVirtualToPhysical osVirtualToPhysical_recomp
+#define osSpTaskYield osSpTaskYield_recomp
 
 #include "common.h"
 #include "global.h"

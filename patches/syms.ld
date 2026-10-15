@@ -16,6 +16,7 @@ osGetTime_recomp = 0x8F00000C;
 osWritebackDCache_recomp = 0x8F000010;
 osInvalDCache_recomp = 0x8F000014;
 osVirtualToPhysical_recomp = 0x8F000018;
+osSpTaskYield_recomp = 0x8F00001C;
 
 /* The port's own, in src/patch_host.cpp. */
 pw64_frame_presented = 0x8F001000;

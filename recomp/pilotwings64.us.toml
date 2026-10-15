@@ -63,6 +63,7 @@ ignored = [
     "uvChan_80205CE4",    # patches/interpolation.c
     "_uvEnvDraw",         # patches/interpolation.c
     "uvClkGetSec",        # patches/clocks.c
+    "_uvScHandleRetrace", # patches/sched.c
 ]
 
 # Three instructions touch hardware the runtime has no model of. Each is a nop
