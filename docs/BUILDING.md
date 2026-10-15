@@ -202,8 +202,10 @@ the middle of play: `src/rt64_shaders.txt` lists them in sections (its header sa
 specializes each one (`RT64_PREBUILT_SHADER_LIST` in `CMakeLists.txt`). In Chrome the whole list is built behind the
 game from its first frame, and the game waits only when a frame wants 4 or more of a section's shaders that aren't
 built yet, under a small "Preparing graphics" indicator in a corner. Firefox builds a pipeline in line with the rest of
-its GPU work, so there those above the first section (the title screen and the menus) are built before the game
-starts, and a section when the game first draws it, the game waiting. `tools/record_shaders.sh` records the list (its
+its GPU work, so there those above the first section (the logos and the title screen) are built before the game
+starts, and a section when the game first draws it, the game waiting. The menus are a section of their own, so Firefox
+draws the title before it builds them: they wait after Start, where a player expects a moment, not before the first
+frame. `tools/record_shaders.sh` records the list (its
 header says how): N64Recomp-browser's recorder drives the page in headless Chrome through `tools/shader_plan.json`,
 in which `tools/shader_survey.js` starts each test of each vehicle.
 
