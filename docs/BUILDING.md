@@ -256,6 +256,12 @@ Chrome 155 waited 3.4 s for 9 at the title and drew 58.2 presents a second (medi
 boot's 33, 10.1 s for the menus' 47 after Start and 1.5-6.1 s for each test's section, and drew 58.0; at 3840x2000
 (`--play 25`) Chrome waited 3.5 s and drew 58.4, Firefox 4.5 s and 59.5. No sound short, no WebGPU errors.
 
+Played on N64Recomp-browser v0.50.0 (main b246bbb built with its pin moved there, served locally) on 2026-10-16, RTX
+2070, a fresh profile each, one page at a time, a quiet host, by `tools/play_plan.json` with `play_page.mjs`: at
+1256x645 headless Chrome 155 waited 1.8 s and drew 60.0 presents a second (median), Firefox 158 waited 14.7 s in all
+(24.1 s on v0.46.0) and drew 60.0; uncapped at 3840x2000 (`--uncapped --play 25`, the first such run) Chrome drew 323.1
+after 2.1 s and Firefox 238.1 after 3.8 s. No sound short after the waits and no WebGPU errors.
+
 With steps 1 and 2 done, patch the submodules with the web support too (the same commands run again when CMake
 configures, and do nothing to a checkout that has them):
 
