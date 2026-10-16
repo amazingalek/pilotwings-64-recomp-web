@@ -199,8 +199,8 @@ recompiler), and so is RT64's render to RAM, which on the page holds every displ
 
 The page builds the shaders the game uses before it draws with them, so it never draws with RT64's slow ubershader in
 the middle of play: `src/rt64_shaders.txt` lists them in sections (its header says what each one holds), and the build
-specializes each one (`RT64_PREBUILT_SHADER_LIST` in `CMakeLists.txt`). In Chrome the whole list is built behind the
-game from its first frame, and the game waits only when a frame wants 4 or more of a section's shaders that aren't
+specializes each one (`RT64_PREBUILT_SHADER_LIST` in `CMakeLists.txt`). In Chrome the whole list is built in the
+background, and the game waits only when a frame wants 4 or more of a section's shaders that aren't
 built yet, under a small "Preparing graphics" indicator in a corner. Firefox builds a pipeline in line with the rest of
 its GPU work, so there those above the first section (the logos and the title screen) are built before the game
 starts, and a section when the game first draws it, the game waiting. The menus are a section of their own, so Firefox

@@ -1,6 +1,6 @@
 # The RT64 shaders the web page builds: one shader description a line, other mode L and H, color combiner L and H,
-# flags, in hex. RT64 specializes each one's WGSL when the page is built. In Chrome it builds the whole list behind the
-# game from its first frame; in Firefox those above the first "section" line before the game starts, and a section when
+# flags, in hex. RT64 specializes each one's WGSL when the page is built. In Chrome it builds the whole list in the
+# background; in Firefox those above the first "section" line before the game starts, and a section when
 # a frame first asks for 4 of its shaders, the game waiting. So nothing draws with the ubershader, which integrated
 # graphics can't afford (N64Recomp-browser's README). A description in two sections is built with the first.
 #
