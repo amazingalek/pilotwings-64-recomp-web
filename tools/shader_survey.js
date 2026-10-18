@@ -12,6 +12,9 @@
 // - go(vehicle, cls, test, stop) resolves with the state once the game reaches state stop (the test flying,
 //   TEST_UPDATE, unless told), or false after 90 s.
 // - fly(ms) holds A (throttle, or the rocket belt's thrust) and banks left and right, looking through the C views.
+// - flyAll(ms, throttle) flies as a player does in a longer test: banks left and right in turn, climbs and dives,
+//   presses B (the gyrocopter's missiles) each turn and Z or a C view now and then, and holds A unless throttle is
+//   false (the skydive, whose A opens the chute).
 // - land(ms) presses A every 1.5 s (the cannonball's shot, then on through the results) until the test has ended and
 //   the game is back in its menus, and resolves with the state. The results menu (Check photo, Replay, Next) opens on
 //   Replay after a photo test, and its cursor wraps, so on it land() moves the cursor up to Next, the last item, first
@@ -38,10 +41,12 @@
   const block = 0x80362698;
   const menuCount = 0x8036BDF0, menuCursor = 0x8036BE10;
   const TITLE = 0, PILOT_SELECT = 3, TEST_DETAILS = 2, TEST_UPDATE = 5, RESULTS = 6, RESULTS_CB = 13, CONGRATULATIONS = 14;
-  // The port's keyboard (src/frontend.cpp): X is A, Enter is Start, the arrows the stick, L is C-right.
+  // The port's keyboard (src/frontend.cpp): X is A, C is B, Z is Z, Enter is Start, the arrows the stick, IJKL the C
+  // buttons.
   const keys = {
-    A: ['KeyX', 'x', 88], START: ['Enter', 'Enter', 13], LEFT: ['ArrowLeft', 'ArrowLeft', 37],
-    RIGHT: ['ArrowRight', 'ArrowRight', 39], UP: ['ArrowUp', 'ArrowUp', 38], DOWN: ['ArrowDown', 'ArrowDown', 40],
+    A: ['KeyX', 'x', 88], B: ['KeyC', 'c', 67], Z: ['KeyZ', 'z', 90], START: ['Enter', 'Enter', 13],
+    LEFT: ['ArrowLeft', 'ArrowLeft', 37], RIGHT: ['ArrowRight', 'ArrowRight', 39], UP: ['ArrowUp', 'ArrowUp', 38],
+    DOWN: ['ArrowDown', 'ArrowDown', 40], CUP: ['KeyI', 'i', 73], CDOWN: ['KeyK', 'k', 75], CLEFT: ['KeyJ', 'j', 74],
     CRIGHT: ['KeyL', 'l', 76],
   };
   const send = (type, [code, key, keyCode]) =>
@@ -95,6 +100,23 @@
       await sleep(1900);
     }
     send('keyup', keys.A);
+    return window.state();
+  };
+  window.flyAll = async (ms, throttle = true) => {
+    if (throttle) send('keydown', keys.A);
+    const extras = ['B', 'CUP', 'B', 'Z', 'B', 'CDOWN', 'B', 'CLEFT'];
+    for (let t = 0, i = 0; t < ms; t += 4000, i++) {
+      const turn = i % 2 ? 'LEFT' : 'RIGHT';
+      send('keydown', keys[turn]);
+      await sleep(1200);
+      send('keyup', keys[turn]);
+      await press(extras[i % extras.length]);
+      await press(i % 2 ? 'UP' : 'DOWN', 500);
+      await sleep(400);
+      await press('B');
+      await sleep(1450);
+    }
+    if (throttle) send('keyup', keys.A);
     return window.state();
   };
   window.land = async (ms = 60000) => {

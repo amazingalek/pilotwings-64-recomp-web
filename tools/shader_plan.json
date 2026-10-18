@@ -16,6 +16,10 @@
   "alone; a section for each island and vehicle, what every test of that vehicle on that island drew, put together by",
   "tools/merge_shader_sections.py: every test of every class, the bonus vehicles too; and last the results screen,",
   "whose recording flies the cannonball's first test to reach it, so that its section holds only what the tests don't.",
+  "The pilot class's gyrocopter, rocket belt, glider and birdman tests and the gyrocopter's first B test each have a",
+  "second load that flies them 35-40 s with every button (shader_survey.js's flyAll()). The 8 descriptions a long play",
+  "of the page (2026-10-18) missed in them are in their islands' sections, put there by hand; its cannonball, skydive",
+  "and hopper tests drew nothing the list lacks.",
   "Not recorded: the cannonball's later targets (its code resets the test itself), the photo album, the credits and",
   "the options screen. Most of the 12 s end in a crash or a landing, which draws the results. A shader the list misses",
   "is built behind the game, and the page remembers it and builds it with the rest on the next visit."
@@ -58,6 +62,7 @@
   {"name": "crescent-glider-b1", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(0, 2, 0)"], ["eval", "fly(12000)"]]},
   {"name": "frost-rocket-b1", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(1, 2, 0)"], ["eval", "fly(12000)"]]},
   {"name": "states-gyro-b1", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(2, 2, 0)"], ["eval", "fly(12000)"]]},
+  {"name": "states-gyro-b1", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(2, 2, 0)"], ["eval", "flyAll(35000)"]]},
   {"name": "frost-cannon-b1", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(3, 2, 0)"], ["eval", "fly(12000)"]]},
   {"name": "frost-skydive-b1", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(4, 2, 0)"], ["eval", "fly(12000)"]]},
   {"name": "states-hopper-b1", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(5, 2, 0)"], ["eval", "fly(12000)"]]},
@@ -81,12 +86,16 @@
   {"name": "states-glider-pilot2", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(0, 3, 1)"], ["eval", "fly(12000)"]]},
   {"name": "crescent-rocket-pilot2", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(1, 3, 1)"], ["eval", "fly(12000)"]]},
   {"name": "frost-gyro-pilot2", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(2, 3, 1)"], ["eval", "fly(12000)"]]},
+  {"name": "frost-gyro-pilot2", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(2, 3, 1)"], ["eval", "flyAll(40000)"]]},
   {"name": "states-birdman-pilot2", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(6, 3, 1)"], ["eval", "fly(12000)"]]},
   {"name": "states-glider-pilot3", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(0, 3, 2)"], ["eval", "fly(12000)"]]},
+  {"name": "states-glider-pilot3", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(0, 3, 2)"], ["eval", "flyAll(40000)"]]},
   {"name": "crescent-rocket-pilot3", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(1, 3, 2)"], ["eval", "fly(12000)"]]},
+  {"name": "crescent-rocket-pilot3", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(1, 3, 2)"], ["eval", "flyAll(40000)"]]},
   {"name": "frost-gyro-pilot3", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(2, 3, 2)"], ["eval", "fly(12000)"]]},
   {"name": "states-birdman-pilot3", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(6, 3, 2)"], ["eval", "fly(12000)"]]},
   {"name": "states-birdman-pilot4", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(6, 3, 3)"], ["eval", "fly(12000)"]]},
+  {"name": "states-birdman-pilot4", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(6, 3, 3)"], ["eval", "flyAll(40000)"]]},
   {"name": "results", "steps": [["evalFile", "shader_survey.js"], ["eval", "go(3, 0, 0)"], ["wait", 2000], ["eval", "land()"], ["wait", 3000]]}
  ]
 }

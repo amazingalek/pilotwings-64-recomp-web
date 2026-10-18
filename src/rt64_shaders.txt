@@ -13,6 +13,10 @@
 # alone; a section for each island and vehicle, what every test of that vehicle on that island drew, put together by
 # tools/merge_shader_sections.py: every test of every class, the bonus vehicles too; and last the results screen,
 # whose recording flies the cannonball's first test to reach it, so that its section holds only what the tests don't.
+# The pilot class's gyrocopter, rocket belt, glider and birdman tests and the gyrocopter's first B test each have a
+# second load that flies them 35-40 s with every button (shader_survey.js's flyAll()). The 8 descriptions a long play
+# of the page (2026-10-18) missed in them are in their islands' sections, put there by hand; its cannonball, skydive
+# and hopper tests drew nothing the list lacks.
 # Not recorded: the cannonball's later targets (its code resets the test itself), the photo album, the credits and
 # the options screen. Most of the 12 s end in a crash or a landing, which draws the results. A shader the list misses
 # is built behind the game, and the page remembers it and builds it with the rest on the next visit.
@@ -1106,6 +1110,7 @@ c8102078 001b2c3f fc26a004 1ffc93fc 1806008e
 0c184a50 00182cbf fcffffff fffe7838 0800000e
 0c182078 00182c3f fc111404 ff13ffff 088e000a
 0c182048 00182c3f fc15fe04 4ffe7dfe 088a000e
+c81049d8 00182c3f fc127fff fffff238 0bba440e
 section frost-cannon
 0c1849d8 001b2c3f fc26a004 1f1093ff 1806008e
 0c1845d8 001a2c3f fcffffff fffe7838 0800000e
@@ -1464,6 +1469,7 @@ c8102078 00192c3f fc26a003 1ffc93f8 188e000e
 c8102078 00182c3f fc127fff fffff838 0ccb540a
 c8102078 00192c3f fc26a003 1ffc93f8 1806008e
 0c182078 00182c3f fc20fe04 fffff9fc 0b8e400e
+c8102078 001a3c3f fcffffff fffe7838 0800000a
 section crescent-rocket
 0c184240 00182c3f fcffffff fffe7838 0800000e
 0c184240 00180c3f fc1219ff fffffe38 0803540e
@@ -1545,6 +1551,9 @@ c81049d8 00192c3f fc127fff fffff238 188a000e
 0c182078 001b2c3f fcffffff fffe7838 1889540e
 0c182078 001b2c3f fc111404 ff13ffff 188e000e
 0c182078 001b2c3f fc627fff 1ffcf238 1aaaaa0e
+0c1845d8 001b2cbf fcffffff fffe7838 1889540a
+0c182078 001b2cbf fcffffff fffe7838 1889540e
+0c182078 001d2c3f fcffffff fffe7838 1889540e
 section frost-gyro
 0c1849d8 001b2c3f fc26a004 1f1093ff 1806008e
 0c1845d8 001a2c3f fcffffff fffe7838 0800000e
@@ -1664,6 +1673,7 @@ c8102078 001d2c3f fc26a0c4 10fc9238 188e000e
 0c184a50 00182cbf fcffffff fffe7838 0800000e
 0c182078 00182c3f fc20fe04 fffff9fc 0b8e400e
 0c182078 00182c3f fc20fe04 fffff9fc 080f200e
+0c1849d8 00192cbf fc26a004 1f1093ff 1806008a
 section states-birdman
 0c182078 001d2c3f fc26a004 1ffc93fc 188e000e
 0c183078 001b2c3f fc26a004 1f1093ff 199f100a
@@ -1786,6 +1796,8 @@ c8103078 00182c3f fc127fff fffff238 0ccb540e
 0c184a50 00182c3f fcffffff fffffc38 08000006
 0c184a50 00182c3f fcffffff fffe7838 08000006
 c8102078 00192c3f fc26a003 1ffc93f8 188e000e
+00504240 00002c3f fc119623 ff2fffff 0ccb540b
+0f0a4000 00102c3f fcffffff fffe7838 0800000b
 section results
 0c182078 001d2c3f fc26a004 1ffc93fc 188e000e
 0c183078 001b2c3f fc26a004 1f1093ff 199f100a
