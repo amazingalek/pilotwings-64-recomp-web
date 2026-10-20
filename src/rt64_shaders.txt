@@ -17,7 +17,8 @@
 # second load that flies them 35-40 s with every button (shader_survey.js's flyAll()). The 8 descriptions a long play
 # of the page (2026-10-18) missed in them are in their islands' sections, put there by hand; its cannonball, skydive
 # and hopper tests drew nothing the list lacks. The last 5 in states-gyro are what 4.5 minutes of the gyrocopter's
-# first B test (2026-10-20, a play plan whose next tests never started) missed in Chrome, also put there by hand.
+# first B test (2026-10-20, a play plan whose next tests never started) missed in Chrome, also put there by hand,
+# and frost-skydive's last is what its first B test's landing and results missed in Firefox the same day.
 # Not recorded: the cannonball's later targets (its code resets the test itself), the photo album, the credits and
 # the options screen. Most of the 12 s end in a crash or a landing, which draws the results. A shader the list misses
 # is built behind the game, and the page remembers it and builds it with the rest on the next visit.
@@ -1202,6 +1203,7 @@ section frost-skydive
 0c184240 00182c3f fc1219ff fffffe38 0ccb540e
 0f0a4000 00182c3f fcffffff fffe7838 0800000e
 0c1841c8 00182cbf fc1219ff fffffe38 0ccb540a
+0c182078 001b2c3f fc26a004 1f1093ff 1ccf540a
 section states-hopper
 0c182078 001d2c3f fc26a004 1ffc93fc 188e000e
 0c183078 001b2c3f fc26a004 1f1093ff 199f100a
