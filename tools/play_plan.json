@@ -1,42 +1,37 @@
 {
   "header": [
-    "Plays Pilotwings 64 for N64Recomp-browser's tools/play_page.mjs: the launcher, Load ROM once the shader list Chrome",
-    "builds behind it is done (a click while it builds is lost, and the game never starts; Firefox builds none there, and",
-    "its line saying so is the one waited for), the title, then tests started as a player starts them, through the menus",
-    "(tools/shader_survey.js's go(), which presses Start and A and writes the vehicle and class at the pilot select, a",
-    "need that fails the run unless that vehicle and class are flying), each flown 30 s: the hang glider's first Beginner",
-    "test and the skydive's first B test (Ever-Frost Island), each ended through its results by land(), then the",
-    "gyrocopter's first B test (Little States). The gyrocopter comes last: its test runs on its own clock, which land()'s",
-    "presses of A don't end, and the cannonball's goes on to its next target. Each vehicle is flown by holding keys for so",
-    "many ms of the browser's time."
+    "Pilotwings 64's regular plan for N64Recomp-browser's tools/play_page.mjs, 2-3 minutes with every timeout counted: the",
+    "launcher, Load ROM once the shader list Chrome builds behind it is done (a click while it builds is lost, and the game",
+    "never starts; Firefox builds none there, and its line saying so is the one waited for), the title, then the hang",
+    "glider's first Beginner test started as a player starts it, through the menus (tools/shader_survey.js's go(), which",
+    "presses Start and A and writes the vehicle and class at the pilot select, a need that fails the run unless that",
+    "vehicle and class are flying), flown 12 s (it is down in about 10) and ended through its results (land()), then the",
+    "gyrocopter's first B test (Little States) the same way, flown 52 s: its test runs on its own clock, which land()'s",
+    "presses of A don't end, so it comes last. Each vehicle is flown by holding keys for so many ms of the browser's time.",
+    "tools/play_plan_extended.json plays the skydive between the two, for when a longer play is needed."
   ],
   "page": "Pilotwings64Recomp.html",
   "load": [
-    ["until", "Device Name", 60000],
-    ["until", "RT64: all \\d+ prebuilt shaders built|once the game draws", 60000],
-    ["wait", 6000]
+    ["until", "RT64: all \\d+ prebuilt shaders built|once the game draws", 45000],
+    ["wait", 3000]
   ],
   "setup": [
     ["rom", 628, 364],
-    ["wait", 4000]
+    ["wait", 3000]
   ],
   "start": [
     ["click", 628, 364],
-    ["wait", 8000]
+    ["wait", 4000]
   ],
   "play": [
     ["evalFile", "shader_survey.js"],
     ["shot", "title.png"],
-    ["need", "go(0, 0, 0).then((s) => s && s.vehicle === 0 && s.cls === 0 && s)"],
-    ["eval", "fly(30000)"],
+    ["need", "go(0, 0, 0, undefined, 20000).then((s) => s && s.vehicle === 0 && s.cls === 0 && s)"],
+    ["eval", "fly(12000)"],
     ["shot", "glider.png"],
-    ["eval", "land()"],
-    ["need", "go(4, 2, 0).then((s) => s && s.vehicle === 4 && s.cls === 2 && s)"],
-    ["eval", "flyAll(30000, false)"],
-    ["shot", "skydive.png"],
-    ["eval", "land()"],
-    ["need", "go(2, 2, 0).then((s) => s && s.vehicle === 2 && s.cls === 2 && s)"],
-    ["eval", "fly(30000)"],
+    ["eval", "land(15000)"],
+    ["need", "go(2, 2, 0, undefined, 20000).then((s) => s && s.vehicle === 2 && s.cls === 2 && s)"],
+    ["eval", "fly(52000)"],
     ["shot", "gyrocopter.png"]
   ]
 }

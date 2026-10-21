@@ -209,6 +209,12 @@ frame. `tools/record_shaders.sh` records the list (its
 header says how): N64Recomp-browser's recorder drives the page in headless Chrome through `tools/shader_plan.json`,
 in which `tools/shader_survey.js` starts each test of each vehicle.
 
+`tools/play_plan.json` is the page's regular play, 2-3 minutes with every timeout counted, which N64Recomp-browser's
+`tools/play_page.mjs` plays to measure the page: the menus to the hang glider's first Beginner test, flown and ended
+through its results, then the gyrocopter's first B test. `tools/play_plan_extended.json`, at most 5 minutes, plays the
+skydive's first B test between the two, for when a longer play is needed, and the shaders it misses go into the list. Each plan's
+header says what it plays.
+
 A frame the game waits on can take seconds there, which the game's scheduler took for a hung RCP: after 50 retraces
 it sent itself the RDP's done message and built the next frames into display lists RT64 hadn't read yet, and the page
 stopped on the mix of two frames' commands soon after Firefox's first wait. `patches/sched.c` takes those timeouts

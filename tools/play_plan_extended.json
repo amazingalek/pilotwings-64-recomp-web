@@ -1,0 +1,43 @@
+{
+  "header": [
+    "Pilotwings 64's extended plan for N64Recomp-browser's tools/play_page.mjs, at most 5 minutes with every timeout",
+    "counted, for when a longer play than the regular one (tools/play_plan.json) is needed: the launcher, Load ROM once the",
+    "shader list Chrome builds behind it is done (a click while it builds is lost, and the game never starts; Firefox",
+    "builds none there, and its line saying so is the one waited for), the title, then tests started as a player starts",
+    "them, through the menus (tools/shader_survey.js's go(), which presses Start and A and writes the vehicle and class at",
+    "the pilot select, a need that fails the run unless that vehicle and class are flying): the hang glider's first",
+    "Beginner test flown 12 s and the skydive's first B test (Ever-Frost Island) 20 s, each ended through its results by",
+    "land(), then the gyrocopter's first B test (Little States) 25 s. The gyrocopter comes last: its test runs on its own",
+    "clock, which land()'s presses of A don't end, and the cannonball's goes on to its next target. Each vehicle is flown",
+    "by holding keys for so many ms of the browser's time. The skydiver is down about a minute after the jump, so its",
+    "land() has 80 s and the other steps' limits are what they take with room to spare."
+  ],
+  "page": "Pilotwings64Recomp.html",
+  "load": [
+    ["until", "RT64: all \\d+ prebuilt shaders built|once the game draws", 45000],
+    ["wait", 3000]
+  ],
+  "setup": [
+    ["rom", 628, 364],
+    ["wait", 3000]
+  ],
+  "start": [
+    ["click", 628, 364],
+    ["wait", 4000]
+  ],
+  "play": [
+    ["evalFile", "shader_survey.js"],
+    ["shot", "title.png"],
+    ["need", "go(0, 0, 0, undefined, 20000).then((s) => s && s.vehicle === 0 && s.cls === 0 && s)"],
+    ["eval", "fly(12000)"],
+    ["shot", "glider.png"],
+    ["eval", "land(15000)"],
+    ["need", "go(4, 2, 0, undefined, 25000).then((s) => s && s.vehicle === 4 && s.cls === 2 && s)"],
+    ["eval", "flyAll(20000, false)"],
+    ["shot", "skydive.png"],
+    ["eval", "land(80000)"],
+    ["need", "go(2, 2, 0, undefined, 20000).then((s) => s && s.vehicle === 2 && s.cls === 2 && s)"],
+    ["eval", "fly(25000)"],
+    ["shot", "gyrocopter.png"]
+  ]
+}
