@@ -191,7 +191,7 @@ see the README's *Licensing* before distributing one.
 
 This fork's `main` branch also builds with [Emscripten](https://emscripten.org) into a page,
 `Pilotwings64Recomp.html`, that draws through WebGPU. `lib/RT64`, `lib/N64ModernRuntime` and `lib/RecompFrontend` are
-upstream's own, at the same commits, and [N64Recomp-browser](https://github.com/amazingalek/N64Recomp-browser)
+upstream's own, at the same commits, and [N64Recomp-browser](https://github.com/n64hub/N64Recomp-browser)
 (`lib/N64Recomp-browser`) patches their checkouts with the web support, on top of `tools/patch_all.py`'s patches, and
 makes the game a page. The patches change nothing in the desktop build. Mods are off on the page (no live
 recompiler), and so is RT64's render to RAM, which on the page holds every display list for a readback of the frame:
